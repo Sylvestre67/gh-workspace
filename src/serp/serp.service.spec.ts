@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SerpService } from './serp.service';
-import { SerpClient } from 'serp-sdk';
+import { SerpApi } from 'serpapi';
 
-jest.mock('serp-sdk');
+jest.mock('serpapi');
 
 describe('SerpService', () => {
   let service: SerpService;
-  let serpClientMock: jest.Mocked<SerpClient>;
+  let serpApiMock: jest.Mocked<SerpApi>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,7 +14,7 @@ describe('SerpService', () => {
     }).compile();
 
     service = module.get<SerpService>(SerpService);
-    serpClientMock = SerpClient as jest.Mocked<typeof SerpClient>;
+    serpApiMock = SerpApi as jest.Mocked<typeof SerpApi>;
   });
 
   it('should be defined', () => {
@@ -22,27 +22,27 @@ describe('SerpService', () => {
   });
 
   describe('searchGoogle', () => {
-    it('should call SerpClient.search with Google engine', async () => {
+    it('should call SerpApi.json with Google engine', async () => {
       const query = 'test query';
       const searchResult = { data: 'some data' };
-      serpClientMock.prototype.search.mockResolvedValue(searchResult);
+      serpApiMock.prototype.json.mockResolvedValue(searchResult);
 
       const result = await service.searchGoogle(query);
 
-      expect(serpClientMock.prototype.search).toHaveBeenCalledWith(query, { engine: 'google' });
+      expect(serpApiMock.prototype.json).toHaveBeenCalledWith(query, { engine: 'google' });
       expect(result).toEqual(searchResult);
     });
   });
 
   describe('searchDuckDuckGo', () => {
-    it('should call SerpClient.search with DuckDuckGo engine', async () => {
+    it('should call SerpApi.json with DuckDuckGo engine', async () => {
       const query = 'test query';
       const searchResult = { data: 'some data' };
-      serpClientMock.prototype.search.mockResolvedValue(searchResult);
+      serpApiMock.prototype.json.mockResolvedValue(searchResult);
 
       const result = await service.searchDuckDuckGo(query);
 
-      expect(serpClientMock.prototype.search).toHaveBeenCalledWith(query, { engine: 'duckduckgo' });
+      expect(serpApiMock.prototype.json).toHaveBeenCalledWith(query, { engine: 'duckduckgo' });
       expect(result).toEqual(searchResult);
     });
   });
