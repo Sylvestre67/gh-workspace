@@ -1,20 +1,11 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AppService } from './app.service';
-import { SerpService } from './serp/serp.service';
+import { SerpService } from './serp.service';
 
 @ApiTags('Search')
 @Controller()
-export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly serpService: SerpService,
-  ) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+export class SerpController {
+  constructor(private readonly serpService: SerpService) {}
 
   @Get('search/google')
   @ApiOperation({ summary: 'Perform a Google search' })
