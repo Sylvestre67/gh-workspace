@@ -1,20 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SerpService } from './serp.service';
-import { SerpApi } from 'serpapi';
+import { ConfigService } from '../config/config.service';
+import { getJson } from 'serpapi';
 
 jest.mock('serpapi');
 
 describe('SerpService', () => {
   let service: SerpService;
-  let serpApiMock: jest.Mocked<SerpApi>;
+  let getJsonMock: jest.MockedFunction<typeof getJson>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SerpService],
+      providers: [
+        SerpService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('test-api-key'),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<SerpService>(SerpService);
-    serpApiMock = SerpApi as jest.Mocked<typeof SerpApi>;
+    getJsonMock = getJson as jest.MockedFunction<typeof getJson>;
   });
 
   it('should be defined', () => {
@@ -22,27 +31,30 @@ describe('SerpService', () => {
   });
 
   describe('searchGoogle', () => {
-    it('should call SerpApi.json with Google engine', async () => {
+    it('should call getJson with Google engine', async () => {
       const query = 'test query';
       const searchResult = { data: 'some data' };
-      serpApiMock.prototype.json.mockResolvedValue(searchResult);
+      getJsonMock.mockResolvedValue(searchResult);
 
       const result = await service.searchGoogle(query);
 
-      expect(serpApiMock.prototype.json).toHaveBeenCalledWith(query, { engine: 'google' });
+      expect(getJsonMock).toHaveBeenCalledWith({ engine: 'google', q: query });
       expect(result).toEqual(searchResult);
     });
   });
 
   describe('searchDuckDuckGo', () => {
-    it('should call SerpApi.json with DuckDuckGo engine', async () => {
+    it('should call getJson with DuckDuckGo engine', async () => {
       const query = 'test query';
       const searchResult = { data: 'some data' };
-      serpApiMock.prototype.json.mockResolvedValue(searchResult);
+      getJsonMock.mockResolvedValue(searchResult);
 
       const result = await service.searchDuckDuckGo(query);
 
-      expect(serpApiMock.prototype.json).toHaveBeenCalledWith(query, { engine: 'duckduckgo' });
+      expect(getJsonMock).toHaveBeenCalledWith({
+        engine: 'duckduckgo',
+        q: query,
+      });
       expect(result).toEqual(searchResult);
     });
   });
