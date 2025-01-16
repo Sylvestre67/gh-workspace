@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { SerpClient } from 'serp-sdk';
+import { SerpApi } from 'serpapi';
 import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class SerpService {
-  private readonly serpClient: SerpClient;
+  private readonly serpApi: SerpApi;
 
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get('SERP_API_KEY');
-    this.serpClient = new SerpClient(apiKey);
+    this.serpApi = new SerpApi(apiKey);
   }
 
   async search(query: string): Promise<any> {
-    return this.serpClient.search(query);
+    return this.serpApi.json(query);
   }
 
   async searchGoogle(query: string): Promise<any> {
-    return this.serpClient.search(query, { engine: 'google' });
+    return this.serpApi.json(query, { engine: 'google' });
   }
 
   async searchDuckDuckGo(query: string): Promise<any> {
-    return this.serpClient.search(query, { engine: 'duckduckgo' });
+    return this.serpApi.json(query, { engine: 'duckduckgo' });
   }
 }
